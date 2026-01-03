@@ -35,7 +35,7 @@ def chat(request: ChatRequest):
 
 # gọi api thật, trả về api thật
 # run terminal : uvicorn main:app --reload
-# chrome : http://127.0.0.1:8000/docs
+# chrome :ttp://127.0.0.1:8000/docs
 # {
 #   "question": "Shop giao hàng mấy ngày?"
 # }
