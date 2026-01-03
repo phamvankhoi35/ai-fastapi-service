@@ -6,8 +6,11 @@ import os
 
 load_dotenv()
 
-def load_document():
-    with open("documents.txt", "r", encoding="utf-8") as f:
+BASE_DIR = os.path.dirname(__file__)
+DOC_PATH = os.path.join(BASE_DIR, "documents.txt")
+
+def load_documents():
+    with open(DOC_PATH, "r", encoding="utf-8") as f:
         return f.read()
 
 def create_vector_db(text: str):

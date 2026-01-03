@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from ai_client import ask_ai
-from rag import load_document, create_vector_db, search_docs
+
+from app.ai_client import ask_ai
+from app.rag import load_documents, create_vector_db, search_docs
 
 app = FastAPI()
 
@@ -11,7 +12,7 @@ system_prompt = """
     Nếu không có thông tin, hãy nói bạn không chắc chắn.
 """
 
-docs_text = load_document()
+docs_text = load_documents()
 vector_db = create_vector_db(docs_text)
 
 class ChatRequest(BaseModel):
@@ -20,7 +21,7 @@ class ChatRequest(BaseModel):
 @app.post("/chat")
 def chat(request: ChatRequest):
     related_docs = search_docs(vector_db, request.question)
-    context = "\n".join(([doc.page_content for doc in related_docs]))
+    context = "\n".join([doc.page_content for doc in related_docs])
 
     final_prompt = f"""
         Thông tin nội bộ:
