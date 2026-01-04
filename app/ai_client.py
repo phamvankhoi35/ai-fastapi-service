@@ -10,14 +10,16 @@ client = OpenAI(
     api_key=os.getenv("OPENAI_API_KEY"),
 )
 
-def ask_ai(system_prompt: str, user_prompt: str) -> str:
+def ask_ai(messages, context) -> str:
     # Hàm gửi câu hỏi tới AI và nhận câu trả lời
-    res = client.chat.completions.create(
+    messages.append({
+        "role": "system",
+        "content": context
+    })
+
+    response = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
+        messages=messages,
         temperature=0.3
     )
-    return res.choices[0].message.content
+    return response.choices[0].message.content

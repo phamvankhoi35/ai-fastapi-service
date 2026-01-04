@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+from ai_chatbot1.app.memory import get_history, add_message
 from app.ai_client import ask_ai
 from app.rag import load_documents, create_vector_db, search_docs
 
@@ -16,22 +17,39 @@ docs_text = load_documents()
 vector_db = create_vector_db(docs_text)
 
 class ChatRequest(BaseModel):
+    session_id: str
     question: str
 
 @app.post("/chat")
 def chat(request: ChatRequest):
+    history = get_history(request.session_id)
+
     related_docs = search_docs(vector_db, request.question)
     context = "\n".join([doc.page_content for doc in related_docs])
+
+    messages = [
+        {
+            "role": "user",
+            "content": "Bạn là chatbot CSKH"
+        }
+    ]
+
+    messages += history
+    messages.append({
+        "role": "user",
+        "content": request.question
+    })
 
     final_prompt = f"""
         Thông tin nội bộ:
         {context}
-    
-        Câu hỏi khách hàng:
-        {request.question}
     """
 
-    answer = ask_ai(system_prompt, final_prompt)
+    answer = ask_ai(messages, final_prompt)
+
+    add_message(request.session_id, "user", request.question)
+    add_message(request.session_id, "assistant", answer)
+
     return {"answer": answer}
 
 # gọi api thật, trả về api thật
