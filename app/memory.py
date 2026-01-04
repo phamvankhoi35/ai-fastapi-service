@@ -21,15 +21,22 @@ import redis
 import json
 
 redis_url = os.getenv("REDIS_URL")
-redis_client = redis.from_url(redis_url, decode_responses=True)
+
+redis_client = None
+if redis_url:
+    redis_client = redis.from_url(redis_url, decode_responses=True)
 
 def get_history(session_id: str):
+    if not redis_client:
+        return []
     data = redis_client.get(session_id)
     if not data:
         return []
     return json.loads(data)
 
 def add_message(session_id: str, role: str, content: str):
+    if not redis_client:
+        return
     history = get_history(session_id)
     history.append({
         "role": role,
