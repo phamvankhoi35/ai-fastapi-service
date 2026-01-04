@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from ai_chatbot1.app.memory import get_history, add_message
+from app.memory import get_history, add_message
 from app.ai_client import ask_ai
 from app.rag import load_documents, create_vector_db, search_docs
 
