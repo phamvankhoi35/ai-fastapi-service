@@ -5,6 +5,8 @@ from app.memory import get_history, add_message
 from app.ai_client import ask_ai
 from app.rag import load_documents, create_vector_db, search_docs
 
+from app.logger import log_chat
+
 app = FastAPI()
 
 system_prompt = """
@@ -49,6 +51,9 @@ def chat(request: ChatRequest):
 
     add_message(request.session_id, "user", request.question)
     add_message(request.session_id, "assistant", answer)
+
+    # log chat
+    log_chat(request.session_id, request.question, answer)
 
     return {"answer": answer}
 
